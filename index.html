@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>発語きろくアルバム</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* アプリ用カスタムスタイル */
+    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&family=Nunito:wght@700;900&display=swap');
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+    }
+    .font-num {
+      font-family: 'Nunito', sans-serif;
+    }
+    /* カード切り替え時のポンッと跳ねるアニメーション */
+    @keyframes popBounce {
+      0% { transform: scale(0.92); opacity: 0.7; }
+      60% { transform: scale(1.03); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop-card {
+      animation: popBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    /* マイクくんの呼吸アニメーション */
+    @keyframes micPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .animate-mic-pulse {
+      animation: micPulse 1.2s infinite ease-in-out;
+    }
+    /* カスタムスクロールバー */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(217, 119, 6, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-amber-50/50 text-slate-800 min-h-screen flex flex-col select-none">
+
+  <!-- ヘッダー（タイトル＆モード切り替えタブ） -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-amber-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- タイトル -->
+      <div class="flex items-center gap-2.5">
+        <span class="text-3xl filter drop-shadow-xs">🚗</span>
+        <div>
+          <h1 class="text-lg sm:text-xl font-black text-amber-950 tracking-tight leading-none flex items-center gap-2">
+            発語きろくアルバム
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">2さい向け</span>
+          </h1>
+          <p class="text-[11px] text-amber-800/70 font-bold mt-0.5 whitespace-nowrap">ことばのおもいでをあつめよう</p>
+        </div>
+      </div>
+
+      <!-- モード切り替えタブ ＆ アクションボタン -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex bg-amber-100/80 p-1 rounded-2xl border border-amber-200 shadow-inner">
+          <button id="tab-record-btn" class="px-3.5 py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-500 text-white shadow-md transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap">
+            <span>🎈</span> きろくもーど
+          </button>
+          <button id="tab-gallery-btn" class="px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-xl text-amber-900 hover:text-amber-950 transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap">
+            <span>📚</span> これまでのきろく
+          </button>
+        </div>
+
+        <!-- 成長レポートボタン -->
+        <button id="btn-open-report" class="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+          📊 成長レポート
+        </button>
+
+        <!-- カード作成ボタン -->
+        <button id="btn-open-card-creator" class="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-sky-600 hover:from-indigo-600 hover:to-sky-700 text-white text-xs font-black rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+          ✨ カードをつくる
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- メインコンテンツ領域 -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-4 flex flex-col">
+
+    <!-- ============================================== -->
+    <!-- 1. きろくモード（2歳男の子向け：ポップ・迫力大画面） -->
+    <!-- ============================================== -->
+    <section id="view-record" class="flex-1 flex flex-col">
+      
+      <!-- 上部設定バー（親向け：小さくスッキリ配置） -->
+      <div class="bg-white/80 p-3 rounded-2xl border border-amber-200 shadow-xs mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- カード画像フォルダ選択 -->
+          <button id="btn-select-cards-dir" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl border border-amber-300 flex items-center gap-1 transition whitespace-nowrap">
+            📁 カード画像フォルダ
+          </button>
+          <span id="label-cards-dir" class="text-slate-500 font-medium truncate max-w-[130px] sm:max-w-xs">未選択</span>
+
+          <span class="text-amber-200 hidden sm:inline">|</span>
+
+          <!-- 保存先フォルダ選択 -->
+          <button id="btn-select-save-dir" class="px-3 py-1.5 bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold rounded-xl border border-sky-300 flex items-center gap-1 transition whitespace-nowrap">
+            💾 動画の保存先
+          </button>
+          <span id="label-save-dir" class="text-slate-500 font-medium truncate max-w-[130px] sm:max-w-xs">未選択</span>
+
+          <!-- 前回のフォルダを再開するボタン -->
+          <button id="btn-resume-session" class="hidden px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 animate-pulse whitespace-nowrap">
+            🔁 前回のフォルダを再開
+          </button>
+        </div>
+
+        <!-- シャッフル切り替えトグル（デフォルトON） -->
+        <label class="flex items-center gap-2 cursor-pointer bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200 select-none whitespace-nowrap">
+          <input type="checkbox" id="chk-shuffle" checked class="w-4 h-4 text-amber-600 rounded-md focus:ring-amber-400">
+          <span class="text-amber-900 font-bold text-xs">🔀 シャッフル出題</span>
+        </label>
+      </div>
+
+      <!-- メイン出題・録音エリア -->
+      <div class="flex-1 flex flex-col bg-white rounded-3xl border-4 border-amber-300 shadow-xl overflow-hidden relative">
+
+        <!-- フォルダ未選択時の案内 -->
+        <div id="empty-state-notice" class="my-auto text-center max-w-lg py-12 px-4 mx-auto">
+          <div class="text-6xl mb-4 animate-bounce">🎈</div>
+          <h2 class="text-xl font-black text-amber-900 mb-2 break-keep">カードフォルダを選んでスタート！</h2>
+          <p class="text-xs sm:text-sm text-slate-500 leading-relaxed mb-6 break-keep">
+            「パトカー.jpg」「りんご.png」などが入ったフォルダを指定すると、大きな絵カードが出題されます。
+          </p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button id="btn-guide-cards-dir" class="w-full sm:w-auto px-6 py-3.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-black rounded-2xl shadow-lg shadow-amber-200 transition active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+              📁 画像フォルダをえらぶ
+            </button>
+            <button id="btn-guide-resume" class="hidden w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black rounded-2xl shadow-lg shadow-orange-200 transition active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+              🔁 前回のフォルダで再開
+            </button>
+          </div>
+        </div>
+
+        <!-- カード出題エリア（フォルダ選択後に表示） -->
+        <div id="card-stage" class="hidden flex-1 flex flex-col p-4 sm:p-6 justify-between">
+          
+          <!-- カード画像（大画面・見やすい迫力サイズ） -->
+          <div class="flex-1 min-h-[280px] max-h-[56vh] flex items-center justify-center bg-amber-50/40 rounded-2xl p-2 relative overflow-hidden border border-amber-100">
+            <img id="card-image" src="" alt="お題の画像" class="max-w-full max-h-full object-contain rounded-xl drop-shadow-md transition-transform duration-200">
+          </div>
+
+          <!-- 単語名＆発音メモ欄 -->
+          <div class="mt-3 text-center">
+            <div id="card-word-title" class="text-3xl sm:text-5xl font-black text-amber-950 tracking-wider drop-shadow-xs">
+              パトカー
+            </div>
+
+            <!-- 本人の発音メモ（任意入力） -->
+            <div class="mt-2 inline-flex items-center gap-2 bg-amber-100/70 px-3 py-1 rounded-full border border-amber-200">
+              <span class="text-xs font-bold text-amber-800 whitespace-nowrap">💬 きょうの言いかた:</span>
+              <input type="text" id="input-pronunciation-note" placeholder="例: ぶーぶー、ぱと" class="bg-white px-2.5 py-0.5 rounded-lg border border-amber-300 text-xs font-bold text-amber-950 focus:outline-none focus:ring-2 focus:ring-amber-400 w-36">
+            </div>
+          </div>
+
+          <!-- 下部操作パネル（録音状況 ＆ 次へボタン） -->
+          <div class="mt-4 pt-3 border-t border-amber-100 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- マイクキャラクター（録音中アニメーション） -->
+            <div class="flex items-center gap-2.5 bg-amber-50 px-4 py-2 rounded-2xl border border-amber-200">
+              <div id="mic-icon-wrapper" class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-xs">
+                🎙️
+              </div>
+              <div>
+                <div id="mic-status-label" class="text-xs font-black text-emerald-700 flex items-center gap-1 whitespace-nowrap">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  おみみをすまして聴いてるよ
+                </div>
+                <div class="text-[10px] text-slate-400 font-bold whitespace-nowrap">スペースキーで自動ほぞん</div>
+              </div>
+            </div>
+
+            <!-- 操作ボタン群 -->
+            <div class="flex items-center gap-2 ml-auto">
+              <!-- 一時停止 / 再開ボタン -->
+              <button id="btn-toggle-rec" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl border border-slate-300 transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+                ⏸️ 録音ストップ
+              </button>
+
+              <!-- きろくして つぎへボタン -->
+              <button id="btn-next-card" class="px-6 sm:px-8 py-3.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-500 hover:to-orange-600 text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-orange-200 transition active:scale-95 flex items-center gap-2 whitespace-nowrap">
+                <span>きろくして つぎへ 🚀</span>
+                <span class="hidden sm:inline text-xs bg-white/20 px-2 py-0.5 rounded-lg">[Space]</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 操作ヒント -->
+      <div class="mt-2 text-center text-xs font-bold text-amber-800/60 break-keep">
+        💡 親御さんの手元操作：<span class="bg-white px-2 py-0.5 rounded-md border border-amber-200 font-mono">[スペースキー]</span> 保存して次へ ／ <span class="bg-white px-2 py-0.5 rounded-md border border-amber-200 font-mono">[Enter]</span> 録音ストップ・再開
+      </div>
+
+    </section>
+
+    <!-- ============================================== -->
+    <!-- 2. これまでのきろく（大人のアルバム・ずかん） -->
+    <!-- ============================================== -->
+    <section id="view-gallery" class="hidden flex-1 flex flex-col">
+      
+      <!-- ギャラリー上部：サマリーと検索・五十音バー -->
+      <div class="bg-white p-4 rounded-3xl border border-amber-200 shadow-sm mb-4">
+        
+        <!-- 獲得数サマリー -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base font-black text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+              <span>📚</span> ことばのコレクション
+            </h2>
+            <p class="text-xs text-slate-500 whitespace-nowrap">保存先フォルダの動画から自動集計しています</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="bg-amber-50 px-3 py-1.5 rounded-2xl border border-amber-200 text-center">
+              <span class="text-[10px] font-bold text-amber-800 block whitespace-nowrap">覚えたことば</span>
+              <span id="stat-total-words" class="text-xl font-black text-amber-950 font-num">0</span>
+              <span class="text-[10px] text-amber-800 font-bold">種類</span>
+            </div>
+            <div class="bg-sky-50 px-3 py-1.5 rounded-2xl border border-sky-200 text-center">
+              <span class="text-[10px] font-bold text-sky-800 block whitespace-nowrap">総テイク数</span>
+              <span id="stat-total-takes" class="text-xl font-black text-sky-950 font-num">0</span>
+              <span class="text-[10px] text-sky-800 font-bold">回</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 検索バー ＆ 五十音インデックス -->
+        <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <!-- 検索インプット -->
+          <div class="relative flex-1">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input type="text" id="input-gallery-search" placeholder="ことばや言いかたで検索（例: ぱと、りんご）" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-400">
+          </div>
+
+          <!-- 保存先フォルダ更新ボタン -->
+          <button id="btn-refresh-gallery" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-300 transition active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap">
+            🔄 再読み込み
+          </button>
+        </div>
+
+        <!-- 五十音タブバー -->
+        <div id="gojuon-bar" class="mt-3 flex flex-wrap gap-1 text-[11px] font-bold text-slate-600">
+          <button data-row="ALL" class="gojuon-tab px-2.5 py-1 rounded-lg bg-amber-500 text-white shadow-xs whitespace-nowrap">すべて</button>
+          <button data-row="A" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">あ行</button>
+          <button data-row="KA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">か行</button>
+          <button data-row="SA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">さ行</button>
+          <button data-row="TA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">た行</button>
+          <button data-row="NA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">な行</button>
+          <button data-row="HA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">は行</button>
+          <button data-row="MA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">ま行</button>
+          <button data-row="YA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">や行</button>
+          <button data-row="RA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">ら行</button>
+          <button data-row="WA" class="gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap">わ行</button>
+        </div>
+
+      </div>
+
+      <!-- 単語アコーディオン一覧 -->
+      <div id="gallery-container" class="flex-1 space-y-2.5 overflow-y-auto pb-12">
+        <div class="text-center py-16 text-slate-400 font-bold text-sm">
+          保存先フォルダが選択されると、これまでの記録が表示されます。
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============================================== -->
+  <!-- 3. モーダル類（カード作成・尺調整・レポート） -->
+  <!-- ============================================== -->
+
+  <!-- A. カード作成モーダル（Google画像検索 & コピペ・D&D連携） -->
+  <div id="modal-card-creator" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border-2 border-indigo-200 flex flex-col max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-black text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>✨</span> 新しいカードをつくる
+        </h3>
+        <button id="btn-close-card-creator" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- 単語名入力 -->
+        <div>
+          <label class="block text-xs font-black text-slate-700 mb-1">ことばの名前（出題名・ファイル名になります）</label>
+          <div class="flex gap-2">
+            <input type="text" id="input-new-word-name" placeholder="例: しょうぼうしゃ" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <button id="btn-open-google-search" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+              🔍 Googleで画像を探す
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 break-keep">※ボタンを押すと別タブで画像検索が開きます。お好きな画像を右クリックして「画像をコピー」してください。</p>
+        </div>
+
+        <!-- 画像貼り付け・ドロップ枠 -->
+        <div>
+          <label class="block text-xs font-black text-slate-700 mb-1">画像をここに貼り付け（Ctrl + V）またはドラッグ＆ドロップ</label>
+          <div id="drop-zone-creator" class="border-2 border-dashed border-indigo-300 bg-indigo-50/40 hover:bg-indigo-50 rounded-2xl p-6 text-center transition flex flex-col items-center justify-center min-h-[160px] cursor-pointer relative">
+            <div id="drop-prompt" class="space-y-1">
+              <span class="text-3xl block">📋</span>
+              <span class="text-xs font-black text-indigo-900 block whitespace-nowrap">画像をコピーした状態で Ctrl + V</span>
+              <span class="text-[10px] text-slate-400 block whitespace-nowrap">またはPC上の画像ファイルをここにドロップ</span>
+            </div>
+            <img id="preview-creator-image" src="" alt="プレビュー" class="hidden max-h-48 max-w-full object-contain rounded-xl shadow-md">
+          </div>
+        </div>
+
+        <!-- 保存ボタン -->
+        <button id="btn-save-new-card" disabled class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black text-sm rounded-2xl shadow-md transition active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>📁</span> カードフォルダに保存する
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- B. 尺調整（トリミング）モーダル：音声波形可視化＆自動選択 -->
+  <div id="modal-trimmer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border-2 border-amber-200 flex flex-col max-h-[95vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <h3 class="text-base font-black text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>✂️</span> 音声の長さを調整（無音カット）
+        </h3>
+        <button id="btn-close-trimmer" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <!-- 動画プレビュー -->
+      <div class="bg-black rounded-2xl overflow-hidden flex items-center justify-center max-h-44 mb-3">
+        <video id="trimmer-video" class="max-h-44 w-auto" playsinline></video>
+      </div>
+
+      <!-- 音声波形（Waveform）表示 Canvas -->
+      <div class="mb-3">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1">
+          <span class="whitespace-nowrap">🎵 音声波形（山＝声、平＝無音）</span>
+          <span id="trim-duration-label" class="font-num text-amber-700 whitespace-nowrap">0.00s / 0.00s</span>
+        </div>
+        <div class="relative bg-slate-900 rounded-xl p-1 overflow-hidden h-24 border border-slate-700">
+          <canvas id="waveform-canvas" class="w-full h-full block cursor-pointer"></canvas>
+        </div>
+      </div>
+
+      <!-- スライダー操作 -->
+      <div class="space-y-2 mb-4 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span class="text-emerald-700 whitespace-nowrap">🟢 開始位置: <span id="label-trim-start" class="font-num">0.00s</span></span>
+          <span class="text-rose-700 whitespace-nowrap">🔴 終了位置: <span id="label-trim-end" class="font-num">0.00s</span></span>
+        </div>
+        <input type="range" id="slider-trim-start" min="0" max="10" step="0.05" value="0" class="w-full accent-emerald-600 cursor-pointer">
+        <input type="range" id="slider-trim-end" min="0" max="10" step="0.05" value="10" class="w-full accent-rose-600 cursor-pointer">
+      </div>
+
+      <!-- 操作ボタン -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btn-auto-trim" class="px-3.5 py-2 bg-amber-100 hover:bg-amber-200 text-amber-950 font-black text-xs rounded-xl border border-amber-300 transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+            ⚡ 声の部分を自動選択
+          </button>
+          <button id="btn-preview-trim" class="px-3.5 py-2 bg-sky-100 hover:bg-sky-200 text-sky-950 font-black text-xs rounded-xl border border-sky-300 transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+            ▶ 選択範囲をためし聴き
+          </button>
+        </div>
+
+        <button id="btn-save-trim" class="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs rounded-xl shadow-md transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+          💾 上書き保存する
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- C. 成長レポートモーダル（日別カレンダー ＆ 軸目盛り付き成長グラフ） -->
+  <div id="modal-growth-report" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border-2 border-emerald-200 flex flex-col max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <h3 class="text-base font-black text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>📊</span> ことばの成長レポート
+        </h3>
+        <button id="btn-close-report" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <!-- レポート内タブ切り替え -->
+      <div class="flex bg-slate-100 p-1 rounded-xl mb-4 text-xs font-bold">
+        <button id="tab-report-calendar-btn" class="flex-1 py-1.5 rounded-lg bg-white shadow-xs text-emerald-800 whitespace-nowrap">
+          📅 日別カレンダー
+        </button>
+        <button id="tab-report-graph-btn" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          📈 成長グラフ（月・年推移）
+        </button>
+      </div>
+
+      <!-- レポート表示領域 -->
+      <div class="flex-1">
+        <!-- 1. カレンダータブ -->
+        <div id="report-view-calendar">
+          <div class="flex items-center justify-between mb-3">
+            <button id="btn-cal-prev" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold whitespace-nowrap">◀ 先月</button>
+            <span id="cal-month-title" class="text-sm font-black text-slate-800 whitespace-nowrap">2026年 9月</span>
+            <button id="btn-cal-next" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold whitespace-nowrap">次月 ▶</button>
+          </div>
+
+          <!-- カレンダーグリッド -->
+          <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold mb-1 text-slate-400">
+            <div class="text-rose-500">日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div class="text-sky-500">土</div>
+          </div>
+          <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
+            <!-- JSで日付セル生成 -->
+          </div>
+
+          <!-- 選択した日の単語一覧 -->
+          <div class="mt-4 pt-3 border-t border-slate-100">
+            <h4 id="cal-selected-date-label" class="text-xs font-black text-slate-700 mb-2">日付をタップすると記録が表示されます</h4>
+            <div id="cal-selected-items-list" class="space-y-1.5 max-h-36 overflow-y-auto">
+              <!-- JSで選択日のテイク一覧表示 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. グラフタブ（目盛り完備・年月切り替え・新語サマリー） -->
+        <div id="report-view-graph" class="hidden space-y-4">
+          
+          <!-- グラフ上部コントロール（月/年表示切り替え ＆ 前後ナビ） -->
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-emerald-50/70 p-2.5 rounded-2xl border border-emerald-100 text-xs">
+            <!-- モード切り替え -->
+            <div class="flex bg-white/90 p-0.5 rounded-xl border border-emerald-200 shadow-2xs">
+              <button id="btn-graph-mode-month" class="px-3 py-1 font-black rounded-lg bg-emerald-600 text-white shadow-xs whitespace-nowrap">
+                🗓️ 月表示
+              </button>
+              <button id="btn-graph-mode-year" class="px-3 py-1 font-bold rounded-lg text-emerald-900 hover:bg-emerald-50 whitespace-nowrap">
+                📅 年表示
+              </button>
+            </div>
+
+            <!-- 期間移動ナビゲーション -->
+            <div class="flex items-center gap-2">
+              <button id="btn-graph-prev" class="px-2 py-1 bg-white hover:bg-emerald-100 text-emerald-950 font-bold rounded-lg border border-emerald-200 whitespace-nowrap">◀ 前へ</button>
+              <span id="graph-period-title" class="font-black text-slate-800 font-num min-w-[90px] text-center whitespace-nowrap">2026年 9月</span>
+              <button id="btn-graph-next" class="px-2 py-1 bg-white hover:bg-emerald-100 text-emerald-950 font-bold rounded-lg border border-emerald-200 whitespace-nowrap">次へ ▶</button>
+            </div>
+          </div>
+
+          <!-- 累積語数折れ線グラフ（縦軸・横軸目盛り付き） -->
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black text-emerald-950 whitespace-nowrap">📈 覚えた総単語数の推移（累積）</span>
+              <span id="graph-stat-badge" class="text-xs font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap">現在: 0語</span>
+            </div>
+            
+            <div id="graph-svg-container" class="w-full h-56 relative">
+              <svg id="svg-growth-graph" class="w-full h-full block overflow-visible"></svg>
+            </div>
+          </div>
+
+          <!-- ✨ この期間に新しく覚えたことば（サマリーカード） -->
+          <div class="bg-gradient-to-br from-emerald-50/60 to-teal-50/60 p-3.5 rounded-2xl border border-emerald-200 shadow-2xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black text-emerald-950 flex items-center gap-1 whitespace-nowrap">
+                <span>🎉</span> <span id="label-new-words-period">この期間に新しく覚えたことば</span>
+              </span>
+              <span id="badge-new-words-count" class="text-xs font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
+                +0 語
+              </span>
+            </div>
+
+            <!-- 単語チップ一覧 -->
+            <div id="list-new-words-chips" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pt-1">
+              <span class="text-xs text-slate-400 font-bold">この期間に新しく記録された言葉はありません</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- D. 削除確認モーダル -->
+  <div id="modal-confirm-delete" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl border-2 border-rose-200 text-center">
+      <div class="text-4xl mb-2">🗑️</div>
+      <h3 class="text-base font-black text-slate-800 mb-1 whitespace-nowrap">この動画を削除しますか？</h3>
+      <p id="label-delete-filename" class="text-xs text-slate-500 font-bold mb-4 truncate px-2"></p>
+      <div class="flex items-center justify-center gap-2">
+        <button id="btn-cancel-delete" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl whitespace-nowrap">
+          キャンセル
+        </button>
+        <button id="btn-execute-delete" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs whitespace-nowrap">
+          完全に削除する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- E. 処理中オーバーレイ -->
+  <div id="saving-overlay" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center">
+    <div class="bg-white px-6 py-4 rounded-3xl shadow-xl flex items-center gap-3 text-amber-950 font-black text-sm whitespace-nowrap">
+      <span class="w-4 h-4 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></span>
+      <span id="saving-message">きろくを保存中...</span>
+    </div>
+  </div>
+
+  <!-- トースト通知 -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- 背景描画用非表示Canvas -->
+  <canvas id="offscreen-canvas" width="640" height="480" class="hidden"></canvas>
+
+  <script>
+    // ==============================================
+    // アプリケーション状態管理
+    // ==============================================
+    const state = {
+      cardsDirHandle: null,
+      saveDirHandle: null,
+      cardFiles: [],          // フォルダ内の全カード { name, word, fileHandle }
+      deckQueue: [],          // 未出題のインデックスキュー
+      currentCard: null,      // 現在表示中のカード
+      currentImageBitmap: null,
+      isShuffle: true,        // シャッフル初期値：ON
+
+      // 録音・ストリーム
+      mediaStream: null,
+      mediaRecorder: null,
+      audioChunks: [],
+      stoppedBlob: null,      // 手動停止時の録音データ保持用
+      isRecording: false,
+      canvasDrawInterval: null,
+      audioContext: null,
+
+      // ギャラリー状態
+      savedTakes: [],         // 保存先フォルダの録音ファイル一覧
+      activeGojuon: 'ALL',
+      gallerySearchQuery: '',
+      openAccordionWords: new Set(), // 開閉記憶
+
+      // 尺調整
+      trimmingItem: null,
+      trimAudioBuffer: null,
+      trimAudioSource: null,
+      trimPlayInterval: null,
+
+      // レポート表示（カレンダー ＆ グラフ）
+      calYear: new Date().getFullYear(),
+      calMonth: new Date().getMonth() + 1,
+      graphMode: 'month',     // 'month' | 'year'
+      graphYear: new Date().getFullYear(),
+      graphMonth: new Date().getMonth() + 1
+    };
+
+    // DOM参照キャッシュ
+    const dom = {
+      tabRecordBtn: document.getElementById('tab-record-btn'),
+      tabGalleryBtn: document.getElementById('tab-gallery-btn'),
+      viewRecord: document.getElementById('view-record'),
+      viewGallery: document.getElementById('view-gallery'),
+
+      // 設定バー
+      btnSelectCardsDir: document.getElementById('btn-select-cards-dir'),
+      labelCardsDir: document.getElementById('label-cards-dir'),
+      btnSelectSaveDir: document.getElementById('btn-select-save-dir'),
+      labelSaveDir: document.getElementById('label-save-dir'),
+      btnResumeSession: document.getElementById('btn-resume-session'),
+      btnGuideResume: document.getElementById('btn-guide-resume'),
+      chkShuffle: document.getElementById('chk-shuffle'),
+
+      // カード出題
+      emptyNotice: document.getElementById('empty-state-notice'),
+      cardStage: document.getElementById('card-stage'),
+      btnGuideCardsDir: document.getElementById('btn-guide-cards-dir'),
+      cardImage: document.getElementById('card-image'),
+      cardWordTitle: document.getElementById('card-word-title'),
+      inputNote: document.getElementById('input-pronunciation-note'),
+      micStatusLabel: document.getElementById('mic-status-label'),
+      micIconWrapper: document.getElementById('mic-icon-wrapper'),
+      btnToggleRec: document.getElementById('btn-toggle-rec'),
+      btnNextCard: document.getElementById('btn-next-card'),
+
+      // ギャラリー
+      statTotalWords: document.getElementById('stat-total-words'),
+      statTotalTakes: document.getElementById('stat-total-takes'),
+      inputSearch: document.getElementById('input-gallery-search'),
+      btnRefreshGallery: document.getElementById('btn-refresh-gallery'),
+      galleryContainer: document.getElementById('gallery-container'),
+
+      // カード作成モーダル
+      modalCreator: document.getElementById('modal-card-creator'),
+      btnOpenCardCreator: document.getElementById('btn-open-card-creator'),
+      btnCloseCardCreator: document.getElementById('btn-close-card-creator'),
+      inputNewWordName: document.getElementById('input-new-word-name'),
+      btnOpenGoogleSearch: document.getElementById('btn-open-google-search'),
+      dropZoneCreator: document.getElementById('drop-zone-creator'),
+      dropPrompt: document.getElementById('drop-prompt'),
+      previewCreatorImage: document.getElementById('preview-creator-image'),
+      btnSaveNewCard: document.getElementById('btn-save-new-card'),
+
+      // 尺調整モーダル
+      modalTrimmer: document.getElementById('modal-trimmer'),
+      btnCloseTrimmer: document.getElementById('btn-close-trimmer'),
+      trimmerVideo: document.getElementById('trimmer-video'),
+      waveformCanvas: document.getElementById('waveform-canvas'),
+      trimDurationLabel: document.getElementById('trim-duration-label'),
+      labelTrimStart: document.getElementById('label-trim-start'),
+      labelTrimEnd: document.getElementById('label-trim-end'),
+      sliderTrimStart: document.getElementById('slider-trim-start'),
+      sliderTrimEnd: document.getElementById('slider-trim-end'),
+      btnAutoTrim: document.getElementById('btn-auto-trim'),
+      btnPreviewTrim: document.getElementById('btn-preview-trim'),
+      btnSaveTrim: document.getElementById('btn-save-trim'),
+
+      // 成長レポートモーダル
+      modalReport: document.getElementById('modal-growth-report'),
+      btnOpenReport: document.getElementById('btn-open-report'),
+      btnCloseReport: document.getElementById('btn-close-report'),
+      tabReportCalendarBtn: document.getElementById('tab-report-calendar-btn'),
+      tabReportGraphBtn: document.getElementById('tab-report-graph-btn'),
+      reportViewCalendar: document.getElementById('report-view-calendar'),
+      reportViewGraph: document.getElementById('report-view-graph'),
+      calMonthTitle: document.getElementById('cal-month-title'),
+      calendarGrid: document.getElementById('calendar-grid'),
+      btnCalPrev: document.getElementById('btn-cal-prev'),
+      btnCalNext: document.getElementById('btn-cal-next'),
+      calSelectedDateLabel: document.getElementById('cal-selected-date-label'),
+      calSelectedItemsList: document.getElementById('cal-selected-items-list'),
+
+      // グラフタブ
+      btnGraphModeMonth: document.getElementById('btn-graph-mode-month'),
+      btnGraphModeYear: document.getElementById('btn-graph-mode-year'),
+      btnGraphPrev: document.getElementById('btn-graph-prev'),
+      btnGraphNext: document.getElementById('btn-graph-next'),
+      graphPeriodTitle: document.getElementById('graph-period-title'),
+      graphStatBadge: document.getElementById('graph-stat-badge'),
+      svgGrowthGraph: document.getElementById('svg-growth-graph'),
+      graphSvgContainer: document.getElementById('graph-svg-container'),
+      labelNewWordsPeriod: document.getElementById('label-new-words-period'),
+      badgeNewWordsCount: document.getElementById('badge-new-words-count'),
+      listNewWordsChips: document.getElementById('list-new-words-chips'),
+
+      // 削除確認モーダル
+      modalConfirmDelete: document.getElementById('modal-confirm-delete'),
+      labelDeleteFilename: document.getElementById('label-delete-filename'),
+      btnCancelDelete: document.getElementById('btn-cancel-delete'),
+      btnExecuteDelete: document.getElementById('btn-execute-delete'),
+
+      // 共通オーバーレイ・通知
+      savingOverlay: document.getElementById('saving-overlay'),
+      savingMessage: document.getElementById('saving-message'),
+      toastContainer: document.getElementById('toast-container'),
+      offscreenCanvas: document.getElementById('offscreen-canvas')
+    };
+
+    // ==============================================
+    // 木琴・おもちゃ風効果音（Web Audio API）
+    // ==============================================
+    function getAudioCtx() {
+      if (!state.audioContext) {
+        state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (state.audioContext.state === 'suspended') {
+        state.audioContext.resume();
+      }
+      return state.audioContext;
+    }
+
+    // カードをめくったときの「ポコン♪」音
+    function playPopSound() {
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.2);
+      } catch (e) {}
+    }
+
+    // 保存完了時の「ピロン♪」音
+    function playSuccessSound() {
+      try {
+        const ctx = getAudioCtx();
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const startTime = ctx.currentTime + idx * 0.08;
+          gain.gain.setValueAtTime(0.15, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.26);
+        });
+      } catch (e) {}
+    }
+
+    // トースト通知（alertの代用）
+    function notifyToast(msg, isWarn = false) {
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-2.5 rounded-2xl text-xs font-black shadow-lg border transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto flex items-center gap-2 whitespace-nowrap ${
+        isWarn ? 'bg-rose-50 text-rose-900 border-rose-300' : 'bg-amber-900 text-white border-amber-800'
+      }`;
+      toast.innerHTML = `<span>${isWarn ? '⚠️' : '✨'}</span> <span>${msg}</span>`;
+      dom.toastContainer.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ==============================================
+    // フォルダハンドルのIndexedDB永続化
+    // ==============================================
+    function openHandleDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('ChildAppStorageDB', 1);
+        req.onupgradeneeded = () => {
+          req.result.createObjectStore('dir_handles');
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveHandleToDB(key, handle) {
+      try {
+        const db = await openHandleDB();
+        const tx = db.transaction('dir_handles', 'readwrite');
+        tx.objectStore('dir_handles').put(handle, key);
+      } catch (err) {}
+    }
+
+    async function getHandleFromDB(key) {
+      try {
+        const db = await openHandleDB();
+        const tx = db.transaction('dir_handles', 'readonly');
+        const req = tx.objectStore('dir_handles').get(key);
+        return new Promise((resolve) => {
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch (err) {
+        return null;
+      }
+    }
+
+    async function verifyPermission(handle, readWrite = true) {
+      if (!handle) return false;
+      const options = { mode: readWrite ? 'readwrite' : 'read' };
+      try {
+        if ((await handle.queryPermission(options)) === 'granted') return true;
+        if ((await handle.requestPermission(options)) === 'granted') return true;
+      } catch (e) {}
+      return false;
+    }
+
+    // 起動時に前回のフォルダ情報をチェック
+    async function checkSavedDirectoriesOnLoad() {
+      const savedCards = await getHandleFromDB('cardsDirHandle');
+      const savedSave = await getHandleFromDB('saveDirHandle');
+
+      if (savedCards || savedSave) {
+        if (savedCards) dom.labelCardsDir.textContent = `${savedCards.name} (記憶中)`;
+        if (savedSave) dom.labelSaveDir.textContent = `${savedSave.name} (記憶中)`;
+        dom.btnResumeSession.classList.remove('hidden');
+        dom.btnGuideResume.classList.remove('hidden');
+      }
+    }
+
+    // 前回のフォルダをワンタップ再開
+    async function resumePreviousSession() {
+      try {
+        const savedCards = await getHandleFromDB('cardsDirHandle');
+        const savedSave = await getHandleFromDB('saveDirHandle');
+
+        if (!savedCards && !savedSave) {
+          notifyToast('記憶されたフォルダがありません。', true);
+          return;
+        }
+
+        let cardsOk = false;
+        let saveOk = false;
+
+        if (savedCards) {
+          const permitted = await verifyPermission(savedCards, true);
+          if (permitted) {
+            state.cardsDirHandle = savedCards;
+            dom.labelCardsDir.textContent = savedCards.name;
+            await loadCardsFromDirectory(savedCards);
+            cardsOk = true;
+          }
+        }
+
+        if (savedSave) {
+          const permitted = await verifyPermission(savedSave, true);
+          if (permitted) {
+            state.saveDirHandle = savedSave;
+            dom.labelSaveDir.textContent = savedSave.name;
+            saveOk = true;
+          }
+        }
+
+        dom.btnResumeSession.classList.add('hidden');
+        dom.btnGuideResume.classList.add('hidden');
+
+        if (cardsOk && saveOk) {
+          notifyToast('✨ 前回のフォルダ（カード・保存先）に再接続しました！');
+        } else if (cardsOk) {
+          notifyToast('✨ カードフォルダに接続しました。動画の保存先もご確認ください。');
+        } else {
+          notifyToast('フォルダのアクセス許可が得られませんでした。', true);
+        }
+      } catch (err) {
+        notifyToast('フォルダの再開に失敗しました。', true);
+      }
+    }
+
+    dom.btnResumeSession.addEventListener('click', resumePreviousSession);
+    dom.btnGuideResume.addEventListener('click', resumePreviousSession);
+
+    // カード画像フォルダ選択
+    async function selectCardsDirectory() {
+      try {
+        if (!window.showDirectoryPicker) {
+          notifyToast('Google ChromeまたはMicrosoft Edgeをご利用ください。', true);
+          return;
+        }
+        const handle = await window.showDirectoryPicker({ id: 'child-cards-source' });
+        state.cardsDirHandle = handle;
+        dom.labelCardsDir.textContent = handle.name;
+        await saveHandleToDB('cardsDirHandle', handle);
+        await loadCardsFromDirectory(handle);
+
+        if (!state.saveDirHandle) {
+          notifyToast('💡 続けて「動画の保存先」フォルダをお選びください。');
+        }
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          notifyToast('カードフォルダの選択に失敗しました。', true);
+        }
+      }
+    }
+
+    dom.btnSelectCardsDir.addEventListener('click', selectCardsDirectory);
+    dom.btnGuideCardsDir.addEventListener('click', selectCardsDirectory);
+
+    // 動画保存先フォルダ選択
+    dom.btnSelectSaveDir.addEventListener('click', async () => {
+      try {
+        if (!window.showDirectoryPicker) {
+          notifyToast('対応ブラウザ（Chrome/Edge）をご利用ください。', true);
+          return;
+        }
+        const handle = await window.showDirectoryPicker({ id: 'child-records-target' });
+        state.saveDirHandle = handle;
+        dom.labelSaveDir.textContent = handle.name;
+        await saveHandleToDB('saveDirHandle', handle);
+        notifyToast(`💾 保存先に「${handle.name}」を設定しました`);
+        loadSavedRecords();
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          notifyToast('保存先フォルダの選択に失敗しました。', true);
+        }
+      }
+    });
+
+    // フォルダ内の画像を読み込んでデッキ作成
+    async function loadCardsFromDirectory(dirHandle) {
+      const validExts = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp'];
+      const cards = [];
+
+      for await (const entry of dirHandle.values()) {
+        if (entry.kind === 'file') {
+          const lower = entry.name.toLowerCase();
+          if (validExts.some(ext => lower.endsWith(ext))) {
+            const lastDot = entry.name.lastIndexOf('.');
+            const word = lastDot !== -1 ? entry.name.slice(0, lastDot) : entry.name;
+            cards.push({ name: entry.name, word, fileHandle: entry });
+          }
+        }
+      }
+
+      if (cards.length === 0) {
+        notifyToast('フォルダ内に画像ファイル（jpg, png等）が見つかりませんでした。', true);
+        return;
+      }
+
+      cards.sort((a, b) => a.word.localeCompare(b.word, 'ja'));
+      state.cardFiles = cards;
+
+      rebuildDeckQueue();
+
+      dom.emptyNotice.classList.add('hidden');
+      dom.cardStage.classList.remove('hidden');
+
+      // 最初のカードを表示＆録音開始
+      presentNextCard();
+    }
+
+    // デッキキューの再構築（シャッフル対応）
+    function rebuildDeckQueue() {
+      const len = state.cardFiles.length;
+      if (len === 0) return;
+      const indices = Array.from({ length: len }, (_, i) => i);
+
+      if (state.isShuffle) {
+        // フィッシャー–イェーツシャッフル
+        for (let i = indices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+      }
+      state.deckQueue = indices;
+    }
+
+    // シャッフルトグル（現在出題中のカードはそのままに次以降を再構成）
+    dom.chkShuffle.addEventListener('change', (e) => {
+      state.isShuffle = e.target.checked;
+      notifyToast(state.isShuffle ? '🔀 シャッフル出題をONにしました' : '➡️ 順番出題に切り替えました');
+      rebuildDeckQueue();
+    });
+
+    // ==============================================
+    // 録音 ＆ WebM動画自動合成 ＆ VAD無音検知
+    // ==============================================
+    async function startRecording() {
+      try {
+        state.stoppedBlob = null; // 新規録音開始時にクリア
+        if (!state.mediaStream) {
+          state.mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true }
+          });
+        }
+
+        // Canvas描画ストリームとマイク音声を結合
+        const canvasStream = dom.offscreenCanvas.captureStream(10);
+        const combinedStream = new MediaStream([
+          ...canvasStream.getVideoTracks(),
+          ...state.mediaStream.getAudioTracks()
+        ]);
+
+        const mimeTypes = ['video/webm;codecs=vp8,opus', 'video/webm;codecs=vp9,opus', 'video/webm'];
+        const selectedMime = mimeTypes.find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+        state.mediaRecorder = new MediaRecorder(combinedStream, selectedMime ? { mimeType: selectedMime } : undefined);
+        state.audioChunks = [];
+
+        state.mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) state.audioChunks.push(e.data);
+        };
+
+        state.mediaRecorder.onstop = () => {
+          if (state.audioChunks.length > 0) {
+            state.stoppedBlob = new Blob(state.audioChunks, { type: 'video/webm' });
+          }
+        };
+
+        state.mediaRecorder.start(100);
+        state.isRecording = true;
+
+        dom.micStatusLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> おみみをすまして聴いてるよ';
+        dom.micStatusLabel.className = 'text-xs font-black text-emerald-700 flex items-center gap-1 whitespace-nowrap';
+        dom.micIconWrapper.className = 'w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-xs animate-mic-pulse';
+        dom.btnToggleRec.innerHTML = '⏸️ 録音ストップ';
+
+        if (state.canvasDrawInterval) clearInterval(state.canvasDrawInterval);
+        state.canvasDrawInterval = setInterval(drawToOffscreenCanvas, 100);
+
+      } catch (err) {
+        notifyToast('マイクの使用が許可されていません。', true);
+      }
+    }
+
+    function stopRecordingSession() {
+      if (state.mediaRecorder && state.isRecording) {
+        state.mediaRecorder.stop();
+        state.isRecording = false;
+      }
+      if (state.canvasDrawInterval) {
+        clearInterval(state.canvasDrawInterval);
+        state.canvasDrawInterval = null;
+      }
+      dom.micStatusLabel.innerHTML = '⏸️ 録音はおやすみ中';
+      dom.micStatusLabel.className = 'text-xs font-black text-slate-500 flex items-center gap-1 whitespace-nowrap';
+      dom.micIconWrapper.className = 'w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xl shadow-xs';
+      dom.btnToggleRec.innerHTML = '▶️ 録音を再開';
+    }
+
+    // 録音トグルボタン
+    dom.btnToggleRec.addEventListener('click', () => {
+      if (state.isRecording) {
+        stopRecordingSession();
+      } else {
+        startRecording();
+      }
+    });
+
+    // 次のカードを出題
+    async function presentNextCard() {
+      if (state.cardFiles.length === 0) return;
+
+      if (state.deckQueue.length === 0) {
+        rebuildDeckQueue();
+      }
+
+      const cardIndex = state.deckQueue.shift();
+      const card = state.cardFiles[cardIndex];
+      state.currentCard = card;
+
+      const file = await card.fileHandle.getFile();
+      const imgUrl = URL.createObjectURL(file);
+      dom.cardImage.src = imgUrl;
+      dom.cardWordTitle.textContent = card.word;
+      dom.inputNote.value = '';
+
+      dom.cardImage.classList.remove('animate-pop-card');
+      void dom.cardImage.offsetWidth;
+      dom.cardImage.classList.add('animate-pop-card');
+
+      playPopSound();
+
+      state.currentImageBitmap = await createImageBitmap(file);
+      drawToOffscreenCanvas();
+
+      startRecording();
+    }
+
+    // Offscreen Canvas描画（画像と単語を埋め込んだ動画フレーム）
+    function drawToOffscreenCanvas() {
+      const canvas = dom.offscreenCanvas;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.fillStyle = '#FFFBEB';
+      ctx.fillRect(0, 0, w, h);
+
+      if (state.currentImageBitmap) {
+        const img = state.currentImageBitmap;
+        const scale = Math.min((w - 40) / img.width, (h - 100) / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const nx = (w - nw) / 2;
+        const ny = (h - nh - 50) / 2;
+        ctx.drawImage(img, nx, ny, nw, nh);
+      }
+
+      if (state.currentCard) {
+        ctx.fillStyle = '#78350F';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(state.currentCard.word, w / 2, h - 30);
+      }
+    }
+
+    // 音声波形解析による無音判定（VAD）
+    // マウスクリックやキーボード打鍵音（数十msの瞬間的なノイズ）を除外し、
+    // 子どもの声（約120ms以上持続する発声）を正確に検出する
+    async function checkIsSilent(blob) {
+      try {
+        const audioCtx = getAudioCtx();
+        const arrayBuf = await blob.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuf);
+        const channelData = audioBuffer.getChannelData(0);
+
+        if (channelData.length === 0) return true;
+
+        const sampleRate = audioBuffer.sampleRate;
+        const totalDuration = audioBuffer.duration;
+
+        // 全体の録音時間が0.2秒未満と極端に短い場合は無音扱い
+        if (totalDuration < 0.2) return true;
+
+        // 40msごとの微小窓でエネルギーを解析
+        const windowSize = Math.floor(sampleRate * 0.04);
+        const totalWindows = Math.floor(channelData.length / windowSize);
+        if (totalWindows < 4) return true;
+
+        // スペースキーやボタン押下直前の打鍵音（末尾約120ms＝3窓分）を評価対象から除外
+        const evalWindows = Math.max(1, totalWindows - 3);
+
+        const rmsList = [];
+        let backgroundSum = 0;
+        let count = 0;
+
+        for (let w = 0; w < evalWindows; w++) {
+          let sumSquares = 0;
+          let peak = 0;
+          const start = w * windowSize;
+          for (let j = 0; j < windowSize; j++) {
+            const val = channelData[start + j];
+            const abs = Math.abs(val);
+            if (abs > peak) peak = abs;
+            sumSquares += val * val;
+          }
+          const rms = Math.sqrt(sumSquares / windowSize);
+          rmsList.push({ rms, peak });
+
+          backgroundSum += rms;
+          count++;
+        }
+
+        // 背景ノイズ基準値
+        const avgRms = count > 0 ? (backgroundSum / count) : 0;
+        // 声と判定する閾値（定常ノイズより有意に大きく、単なるマイク静電ノイズを超える水準）
+        const voiceRmsThreshold = Math.max(0.015, avgRms * 2.2);
+        const voicePeakThreshold = 0.035;
+
+        // 「声の持続性」を判定：
+        // クリック音は1〜2窓（20〜40ms程度）で急速に減衰しますが、
+        // 2歳児の発声（母音・子音）は短くても連続3窓以上（約120ms以上）持続します
+        let consecutiveVoiceWindows = 0;
+        let maxConsecutive = 0;
+        let totalVoiceWindows = 0;
+
+        for (let w = 0; w < rmsList.length; w++) {
+          const { rms, peak } = rmsList[w];
+          if (rms >= voiceRmsThreshold && peak >= voicePeakThreshold) {
+            consecutiveVoiceWindows++;
+            totalVoiceWindows++;
+            if (consecutiveVoiceWindows > maxConsecutive) {
+              maxConsecutive = consecutiveVoiceWindows;
+            }
+          } else {
+            consecutiveVoiceWindows = 0;
+          }
+        }
+
+        // 連続して約120ms以上（3窓以上）かつ合計で約160ms以上（4窓以上）の持続があるか
+        const isVoiceDetected = maxConsecutive >= 3 && totalVoiceWindows >= 4;
+        return !isVoiceDetected;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // 「きろくして つぎへ」実行処理
+    async function saveCurrentTakeAndAdvance() {
+      if (!state.cardsDirHandle || !state.saveDirHandle) {
+        notifyToast('先に「動画の保存先」と「カード画像フォルダ」を選択してください。', true);
+        return;
+      }
+      if (!state.currentCard) return;
+
+      dom.savingOverlay.classList.remove('hidden');
+      dom.savingMessage.textContent = 'きろくを保存中...';
+
+      try {
+        let recordedBlob = null;
+
+        if (state.mediaRecorder && state.isRecording) {
+          recordedBlob = await new Promise((resolve) => {
+            state.mediaRecorder.onstop = () => {
+              const blob = new Blob(state.audioChunks, { type: 'video/webm' });
+              resolve(blob);
+            };
+            stopRecordingSession();
+          });
+        } else if (state.stoppedBlob) {
+          recordedBlob = state.stoppedBlob;
+        } else if (state.audioChunks && state.audioChunks.length > 0) {
+          recordedBlob = new Blob(state.audioChunks, { type: 'video/webm' });
+        }
+
+        if (recordedBlob && recordedBlob.size > 2000) {
+          const isSilent = await checkIsSilent(recordedBlob);
+          if (isSilent) {
+            notifyToast('🔇 声が検出されなかったため、保存をスキップしました');
+          } else {
+            const now = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            const timeStr = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+            const note = dom.inputNote.value.trim();
+            const noteSuffix = note ? `_[${note.replace(/[\\/:*?"<>|]/g, '')}]` : '';
+            const fileName = `${state.currentCard.word}${noteSuffix}_${timeStr}.webm`;
+
+            const fileHandle = await state.saveDirHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(recordedBlob);
+            await writable.close();
+
+            playSuccessSound();
+            notifyToast(`✨ 「${state.currentCard.word}」の声を保存しました！`);
+          }
+        } else {
+          notifyToast('⚠️ 録音データが記録されていませんでした');
+        }
+
+      } catch (err) {
+        notifyToast('動画の書き込みに失敗しました。', true);
+      } finally {
+        dom.savingOverlay.classList.add('hidden');
+        presentNextCard();
+      }
+    }
+
+    dom.btnNextCard.addEventListener('click', saveCurrentTakeAndAdvance);
+
+    // キーボードショートカット（Space: 保存して次へ / Enter: 録音ストップ・再開）
+    window.addEventListener('keydown', (e) => {
+      if (!dom.modalCreator.classList.contains('hidden') ||
+          !dom.modalTrimmer.classList.contains('hidden') ||
+          !dom.modalReport.classList.contains('hidden') ||
+          !dom.modalConfirmDelete.classList.contains('hidden')) {
+        return;
+      }
+      if (dom.viewRecord.classList.contains('hidden')) return;
+
+      if (e.isComposing) return;
+
+      if (e.code === 'Space') {
+        if (document.activeElement === dom.inputNote) return;
+        e.preventDefault();
+        saveCurrentTakeAndAdvance();
+      } else if (e.code === 'Enter') {
+        e.preventDefault();
+        if (state.isRecording) {
+          stopRecordingSession();
+          notifyToast('⏸️ 録音をストップしました');
+        } else {
+          startRecording();
+          notifyToast('🎙️ 録音を再開しました');
+        }
+      }
+    });
+
+    // ==============================================
+    // ギャラリー（これまでのきろく）＆アコーディオン
+    // ==============================================
+    dom.tabRecordBtn.addEventListener('click', () => {
+      dom.viewRecord.classList.remove('hidden');
+      dom.viewGallery.classList.add('hidden');
+      dom.tabRecordBtn.className = 'px-3.5 py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-500 text-white shadow-md transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap';
+      dom.tabGalleryBtn.className = 'px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-xl text-amber-900 hover:text-amber-950 transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap';
+    });
+
+    dom.tabGalleryBtn.addEventListener('click', () => {
+      if (state.isRecording) stopRecordingSession();
+      dom.viewRecord.classList.add('hidden');
+      dom.viewGallery.classList.remove('hidden');
+      dom.tabGalleryBtn.className = 'px-3.5 py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-500 text-white shadow-md transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap';
+      dom.tabRecordBtn.className = 'px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-xl text-amber-900 hover:text-amber-950 transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap';
+      loadSavedRecords();
+    });
+
+    dom.btnRefreshGallery.addEventListener('click', loadSavedRecords);
+
+    // 保存先フォルダからWebM動画一覧を読み込む
+    async function loadSavedRecords() {
+      if (!state.saveDirHandle) {
+        dom.galleryContainer.innerHTML = `
+          <div class="text-center py-16 text-slate-400 font-bold text-sm">
+            上部の「💾 動画の保存先」ボタンから保存先フォルダを指定してください。
+          </div>`;
+        return;
+      }
+
+      const takes = [];
+      for await (const entry of state.saveDirHandle.values()) {
+        if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.webm')) {
+          const base = entry.name.slice(0, -5);
+          const match = base.match(/^(.+?)(?:_\[(.*?)\])?_(\d{8}_\d{6})$/);
+
+          let word = base;
+          let note = '';
+          let dateStr = '';
+          let timestamp = 0;
+
+          if (match) {
+            word = match[1];
+            note = match[2] || '';
+            const t = match[3];
+            const y = t.slice(0,4), m = t.slice(4,6), d = t.slice(6,8);
+            const hr = t.slice(9,11), mn = t.slice(11,13), sc = t.slice(13,15);
+            dateStr = `${y}/${m}/${d} ${hr}:${mn}`;
+            timestamp = new Date(`${y}-${m}-${d}T${hr}:${mn}:${sc}`).getTime();
+          }
+
+          takes.push({
+            fileName: entry.name,
+            fileHandle: entry,
+            word,
+            note,
+            dateStr,
+            timestamp
+          });
+        }
+      }
+
+      state.savedTakes = takes;
+      renderGallery();
+    }
+
+    // 五十音行マッピング
+    function getGojuonRow(char) {
+      if (!char) return 'OTHER';
+      const c = char.charAt(0);
+      if (/[あ-おア-オ]/.test(c)) return 'A';
+      if (/[か-こカ-コが-ごガ-ゴ]/.test(c)) return 'KA';
+      if (/[さ-そサ-ソざ-ぞザ-ゾ]/.test(c)) return 'SA';
+      if (/[た-とタ-トだ-どダ-ド]/.test(c)) return 'TA';
+      if (/[な-のナ-ノ]/.test(c)) return 'NA';
+      if (/[は-ほハ-ホば-ぼバ-ボぱ-ぽパ-ポ]/.test(c)) return 'HA';
+      if (/[ま-もマ-モ]/.test(c)) return 'MA';
+      if (/[や-よヤ-ヨ]/.test(c)) return 'YA';
+      if (/[ら-ろラ-ロ]/.test(c)) return 'RA';
+      if (/[わ-んワ-ン]/.test(c)) return 'WA';
+      return 'OTHER';
+    }
+
+    // ギャラリー一覧の描画（アコーディオン）
+    function renderGallery() {
+      const groups = new Map();
+      state.savedTakes.forEach(t => {
+        if (!groups.has(t.word)) groups.set(t.word, []);
+        groups.get(t.word).push(t);
+      });
+
+      let wordList = Array.from(groups.keys()).map(word => {
+        const list = groups.get(word);
+        list.sort((a, b) => b.timestamp - a.timestamp);
+        return {
+          word,
+          takes: list,
+          latestTake: list[0],
+          gojuonRow: getGojuonRow(word)
+        };
+      });
+
+      wordList.sort((a, b) => a.word.localeCompare(b.word, 'ja'));
+
+      dom.statTotalWords.textContent = wordList.length;
+      dom.statTotalTakes.textContent = state.savedTakes.length;
+
+      const query = dom.inputSearch.value.trim().toLowerCase();
+      if (state.activeGojuon !== 'ALL') {
+        wordList = wordList.filter(item => item.gojuonRow === state.activeGojuon);
+      }
+      if (query) {
+        wordList = wordList.filter(item => {
+          const matchWord = item.word.toLowerCase().includes(query);
+          const matchNote = item.takes.some(t => t.note.toLowerCase().includes(query));
+          return matchWord || matchNote;
+        });
+      }
+
+      if (wordList.length === 0) {
+        dom.galleryContainer.innerHTML = `
+          <div class="text-center py-16 text-slate-400 font-bold text-sm">
+            条件に一致する記録が見つかりませんでした。
+          </div>`;
+        return;
+      }
+
+      dom.galleryContainer.innerHTML = '';
+
+      wordList.forEach(item => {
+        const isOpen = state.openAccordionWords.has(item.word);
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl border border-amber-200/80 shadow-xs overflow-hidden transition-all';
+
+        const header = document.createElement('div');
+        header.className = 'p-3 sm:p-4 flex items-center justify-between cursor-pointer hover:bg-amber-50/50 select-none';
+        header.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-black text-sm flex items-center justify-center">
+              ${item.word.charAt(0)}
+            </span>
+            <div>
+              <div class="text-sm sm:text-base font-black text-slate-800 flex items-center gap-2">
+                <span>${item.word}</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">
+                  ${item.takes.length}回
+                </span>
+              </div>
+              <div class="text-[11px] text-slate-400 font-medium whitespace-nowrap">最新: ${item.latestTake.dateStr || '記録なし'}</div>
+            </div>
+          </div>
+          <span class="text-slate-400 text-xs font-bold transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}">
+            ▼
+          </span>
+        `;
+
+        const body = document.createElement('div');
+        body.className = `p-3 pt-0 border-t border-slate-100 space-y-2 bg-slate-50/50 ${isOpen ? '' : 'hidden'}`;
+
+        item.takes.forEach((take, idx) => {
+          const row = document.createElement('div');
+          row.className = 'bg-white p-2.5 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-2 shadow-2xs';
+          row.innerHTML = `
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-xs font-black text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 whitespace-nowrap">
+                #${item.takes.length - idx}
+              </span>
+              <span class="text-xs font-bold text-slate-600 whitespace-nowrap">${take.dateStr}</span>
+              ${take.note ? `<span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200 truncate">💬 ${take.note}</span>` : ''}
+            </div>
+            <div class="flex items-center gap-1.5 ml-auto">
+              <button class="btn-play-take px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs rounded-lg transition active:scale-95 whitespace-nowrap">
+                ▶ 再生
+              </button>
+              <button class="btn-trim-take px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition active:scale-95 whitespace-nowrap">
+                ✂️ 調整
+              </button>
+              <button class="btn-delete-take px-2 py-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition text-xs whitespace-nowrap">
+                🗑️
+              </button>
+            </div>
+          `;
+
+          row.querySelector('.btn-play-take').addEventListener('click', () => playTakeModal(take));
+          row.querySelector('.btn-trim-take').addEventListener('click', () => openTrimmerModal(take));
+          row.querySelector('.btn-delete-take').addEventListener('click', () => promptDeleteTake(take));
+
+          body.appendChild(row);
+        });
+
+        header.addEventListener('click', () => {
+          if (state.openAccordionWords.has(item.word)) {
+            state.openAccordionWords.delete(item.word);
+          } else {
+            state.openAccordionWords.add(item.word);
+          }
+          renderGallery();
+        });
+
+        card.appendChild(header);
+        card.appendChild(body);
+        dom.galleryContainer.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll('.gojuon-tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.gojuon-tab').forEach(b => {
+          b.className = 'gojuon-tab px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 whitespace-nowrap';
+        });
+        e.target.className = 'gojuon-tab px-2.5 py-1 rounded-lg bg-amber-500 text-white shadow-xs whitespace-nowrap';
+        state.activeGojuon = e.target.getAttribute('data-row');
+        renderGallery();
+      });
+    });
+
+    dom.inputSearch.addEventListener('input', renderGallery);
+
+    async function playTakeModal(take) {
+      try {
+        const file = await take.fileHandle.getFile();
+        const url = URL.createObjectURL(file);
+        const win = window.open(url, '_blank');
+        if (!win) {
+          const video = document.createElement('video');
+          video.src = url;
+          video.controls = true;
+          video.className = 'fixed bottom-4 left-4 z-50 max-h-48 rounded-xl shadow-xl bg-black';
+          document.body.appendChild(video);
+          video.play();
+        }
+      } catch (err) {
+        notifyToast('動画の再生に失敗しました。', true);
+      }
+    }
+
+    // ==============================================
+    // 尺調整（トリミング）＆音声波形可視化
+    // ==============================================
+    async function openTrimmerModal(take) {
+      state.trimmingItem = take;
+      dom.modalTrimmer.classList.remove('hidden');
+
+      try {
+        const file = await take.fileHandle.getFile();
+        const videoUrl = URL.createObjectURL(file);
+        dom.trimmerVideo.src = videoUrl;
+
+        const arrayBuf = await file.arrayBuffer();
+        const audioCtx = getAudioCtx();
+        const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+        state.trimAudioBuffer = audioBuf;
+
+        const dur = audioBuf.duration;
+        dom.sliderTrimStart.max = dur;
+        dom.sliderTrimEnd.max = dur;
+        dom.sliderTrimStart.value = 0;
+        dom.sliderTrimEnd.value = dur;
+        updateTrimLabels();
+
+        drawWaveform(audioBuf);
+
+      } catch (err) {
+        notifyToast('音声の読み込みに失敗しました。', true);
+      }
+    }
+
+    dom.btnCloseTrimmer.addEventListener('click', () => {
+      dom.modalTrimmer.classList.add('hidden');
+      dom.trimmerVideo.pause();
+      stopTrimPreview();
+    });
+
+    function updateTrimLabels() {
+      const s = parseFloat(dom.sliderTrimStart.value);
+      const e = parseFloat(dom.sliderTrimEnd.value);
+      const dur = state.trimAudioBuffer ? state.trimAudioBuffer.duration : 0;
+      dom.labelTrimStart.textContent = `${s.toFixed(2)}s`;
+      dom.labelTrimEnd.textContent = `${e.toFixed(2)}s`;
+      dom.trimDurationLabel.textContent = `${(e - s).toFixed(2)}s / ${dur.toFixed(2)}s`;
+    }
+
+    dom.sliderTrimStart.addEventListener('input', () => {
+      const s = parseFloat(dom.sliderTrimStart.value);
+      const e = parseFloat(dom.sliderTrimEnd.value);
+      if (s >= e) dom.sliderTrimStart.value = Math.max(0, e - 0.1);
+      updateTrimLabels();
+      drawWaveform(state.trimAudioBuffer);
+    });
+
+    dom.sliderTrimEnd.addEventListener('input', () => {
+      const s = parseFloat(dom.sliderTrimStart.value);
+      const e = parseFloat(dom.sliderTrimEnd.value);
+      if (e <= s) dom.sliderTrimEnd.value = Math.min(state.trimAudioBuffer.duration, s + 0.1);
+      updateTrimLabels();
+      drawWaveform(state.trimAudioBuffer);
+    });
+
+    function drawWaveform(audioBuf, playProgress = null) {
+      if (!audioBuf) return;
+      const canvas = dom.waveformCanvas;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.parentElement.clientWidth;
+      const h = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(0, 0, w, h);
+
+      const raw = audioBuf.getChannelData(0);
+      const step = Math.ceil(raw.length / w);
+      const amp = h / 2;
+
+      ctx.fillStyle = '#38BDF8';
+      ctx.beginPath();
+      for (let i = 0; i < w; i++) {
+        let min = 1.0, max = -1.0;
+        for (let j = 0; j < step; j++) {
+          const datum = raw[(i * step) + j];
+          if (datum < min) min = datum;
+          if (datum > max) max = datum;
+        }
+        ctx.fillRect(i, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
+      }
+
+      const dur = audioBuf.duration;
+      const startX = (parseFloat(dom.sliderTrimStart.value) / dur) * w;
+      const endX = (parseFloat(dom.sliderTrimEnd.value) / dur) * w;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(0, 0, startX, h);
+      ctx.fillRect(endX, 0, w - endX, h);
+
+      ctx.strokeStyle = '#10B981';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, 0); ctx.lineTo(startX, h);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#F43F5E';
+      ctx.beginPath();
+      ctx.moveTo(endX, 0); ctx.lineTo(endX, h);
+      ctx.stroke();
+
+      if (playProgress !== null) {
+        const curX = (playProgress / dur) * w;
+        ctx.strokeStyle = '#FBBF24';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(curX, 0); ctx.lineTo(curX, h);
+        ctx.stroke();
+      }
+    }
+
+    // 「⚡ 声の部分を自動選択」
+    dom.btnAutoTrim.addEventListener('click', () => {
+      if (!state.trimAudioBuffer) return;
+      const raw = state.trimAudioBuffer.getChannelData(0);
+      const sampleRate = state.trimAudioBuffer.sampleRate;
+      const dur = state.trimAudioBuffer.duration;
+
+      // 1. 全体のピーク音量を計測（末尾150msは保存時の打鍵音が含まれるため除外）
+      const ignoreEndSamples = Math.floor(sampleRate * 0.15);
+      const effectiveLength = Math.max(0, raw.length - ignoreEndSamples);
+      let peak = 0;
+      for (let i = 0; i < effectiveLength; i += 80) {
+        const abs = Math.abs(raw[i]);
+        if (abs > peak) peak = abs;
+      }
+
+      // 声の閾値（ピークの24%以上、または絶対値0.045以上）
+      const voiceThreshold = Math.max(0.045, peak * 0.24);
+      const windowSize = Math.floor(sampleRate * 0.04); // 40ms窓
+      const totalWindows = Math.floor(effectiveLength / windowSize);
+
+      if (totalWindows < 4) {
+        notifyToast('音が短すぎるため自動選択できませんでした', true);
+        return;
+      }
+
+      // 各窓のRMS（実効音量）を算出
+      const isVoiceWindow = new Uint8Array(totalWindows);
+      for (let w = 0; w < totalWindows; w++) {
+        let sumSq = 0;
+        const offset = w * windowSize;
+        for (let j = 0; j < windowSize; j++) {
+          const val = raw[offset + j];
+          sumSq += val * val;
+        }
+        const rms = Math.sqrt(sumSq / windowSize);
+        if (rms >= voiceThreshold) {
+          isVoiceWindow[w] = 1;
+        }
+      }
+
+      // 2. 単発のクリック音（1〜2窓＝80ms未満）を除外し、3窓（120ms以上）続く声のブロックを特定
+      let firstVoiceWin = -1;
+      let lastVoiceWin = -1;
+
+      for (let w = 0; w <= totalWindows - 3; w++) {
+        if (isVoiceWindow[w] && isVoiceWindow[w + 1] && isVoiceWindow[w + 2]) {
+          if (firstVoiceWin === -1) firstVoiceWin = w;
+          lastVoiceWin = w + 2;
+        }
+      }
+
+      // 3. 声が検出された場合はスライダーを吸着（前後に適度な余白0.08秒を付与）
+      if (firstVoiceWin !== -1 && lastVoiceWin !== -1) {
+        const detectedStart = Math.max(0, (firstVoiceWin * windowSize) / sampleRate - 0.08);
+        const detectedEnd = Math.min(dur, ((lastVoiceWin + 1) * windowSize) / sampleRate + 0.1);
+
+        dom.sliderTrimStart.value = detectedStart;
+        dom.sliderTrimEnd.value = Math.max(detectedStart + 0.2, detectedEnd);
+        updateTrimLabels();
+        drawWaveform(state.trimAudioBuffer);
+        notifyToast('✨ 声の区間を自動選択しました（物音を除外）');
+      } else {
+        notifyToast('はっきりした声の区間が見つかりませんでした', true);
+      }
+    });
+
+    // 「▶ 選択範囲をためし聴き」
+    function stopTrimPreview() {
+      if (state.trimAudioSource) {
+        try { state.trimAudioSource.stop(); } catch (e) {}
+        state.trimAudioSource = null;
+      }
+      if (state.trimPlayInterval) {
+        clearInterval(state.trimPlayInterval);
+        state.trimPlayInterval = null;
+      }
+      dom.btnPreviewTrim.innerHTML = '▶ 選択範囲をためし聴き';
+      dom.btnPreviewTrim.className = 'px-3.5 py-2 bg-sky-100 hover:bg-sky-200 text-sky-950 font-black text-xs rounded-xl border border-sky-300 transition active:scale-95 flex items-center gap-1 whitespace-nowrap';
+      drawWaveform(state.trimAudioBuffer);
+    }
+
+    dom.btnPreviewTrim.addEventListener('click', () => {
+      if (state.trimAudioSource) {
+        stopTrimPreview();
+        return;
+      }
+
+      stopTrimPreview();
+      const s = parseFloat(dom.sliderTrimStart.value);
+      const e = parseFloat(dom.sliderTrimEnd.value);
+      const playDur = e - s;
+      if (playDur <= 0.05) return;
+
+      const audioCtx = getAudioCtx();
+      const src = audioCtx.createBufferSource();
+      src.buffer = state.trimAudioBuffer;
+      src.connect(audioCtx.destination);
+
+      const startTime = audioCtx.currentTime;
+      src.start(0, s, playDur);
+      state.trimAudioSource = src;
+
+      dom.btnPreviewTrim.innerHTML = '⏹️ ためし聴きをストップ';
+      dom.btnPreviewTrim.className = 'px-3.5 py-2 bg-rose-100 hover:bg-rose-200 text-rose-950 font-black text-xs rounded-xl border border-rose-300 transition active:scale-95 flex items-center gap-1 animate-pulse whitespace-nowrap';
+
+      state.trimPlayInterval = setInterval(() => {
+        const elapsed = audioCtx.currentTime - startTime;
+        if (elapsed >= playDur) {
+          stopTrimPreview();
+        } else {
+          drawWaveform(state.trimAudioBuffer, s + elapsed);
+        }
+      }, 30);
+
+      src.onended = () => stopTrimPreview();
+    });
+
+    // 「💾 上書き保存する」
+    dom.btnSaveTrim.addEventListener('click', async () => {
+      if (!state.trimmingItem || !state.trimAudioBuffer) return;
+      dom.savingOverlay.classList.remove('hidden');
+      dom.savingMessage.textContent = 'トリミング動画を書き込み中...';
+
+      try {
+        const s = parseFloat(dom.sliderTrimStart.value);
+        const e = parseFloat(dom.sliderTrimEnd.value);
+        const dur = e - s;
+
+        const audioCtx = getAudioCtx();
+        const sampleRate = state.trimAudioBuffer.sampleRate;
+        const newLength = Math.floor(dur * sampleRate);
+        const trimmedBuffer = audioCtx.createBuffer(1, newLength, sampleRate);
+        const fromData = state.trimAudioBuffer.getChannelData(0);
+        const toData = trimmedBuffer.getChannelData(0);
+        const offset = Math.floor(s * sampleRate);
+        for (let i = 0; i < newLength; i++) {
+          toData[i] = fromData[offset + i] || 0;
+        }
+
+        const dest = audioCtx.createMediaStreamDestination();
+        const src = audioCtx.createBufferSource();
+        src.buffer = trimmedBuffer;
+        src.connect(dest);
+
+        const canvasStream = dom.offscreenCanvas.captureStream(10);
+        const combined = new MediaStream([
+          ...canvasStream.getVideoTracks(),
+          ...dest.stream.getAudioTracks()
+        ]);
+
+        const recorder = new MediaRecorder(combined, { mimeType: 'video/webm' });
+        const chunks = [];
+        recorder.ondataavailable = (ev) => { if (ev.data.size > 0) chunks.push(ev.data); };
+
+        const finished = new Promise(resolve => recorder.onstop = resolve);
+        recorder.start(100);
+        src.start(0);
+
+        setTimeout(() => {
+          recorder.stop();
+        }, dur * 1000 + 150);
+
+        await finished;
+        const newBlob = new Blob(chunks, { type: 'video/webm' });
+
+        const writable = await state.trimmingItem.fileHandle.createWritable();
+        await writable.write(newBlob);
+        await writable.close();
+
+        notifyToast('✨ トリミングした動画を保存しました！');
+        dom.modalTrimmer.classList.add('hidden');
+        loadSavedRecords();
+
+      } catch (err) {
+        notifyToast('トリミングの保存に失敗しました。', true);
+      } finally {
+        dom.savingOverlay.classList.add('hidden');
+      }
+    });
+
+    // ==============================================
+    // 削除確認モーダル
+    // ==============================================
+    let itemToDelete = null;
+
+    function promptDeleteTake(take) {
+      itemToDelete = take;
+      dom.labelDeleteFilename.textContent = take.fileName;
+      dom.modalConfirmDelete.classList.remove('hidden');
+    }
+
+    dom.btnCancelDelete.addEventListener('click', () => {
+      dom.modalConfirmDelete.classList.add('hidden');
+      itemToDelete = null;
+    });
+
+    dom.btnExecuteDelete.addEventListener('click', async () => {
+      if (!itemToDelete || !state.saveDirHandle) return;
+      try {
+        await state.saveDirHandle.removeEntry(itemToDelete.fileName);
+        notifyToast(`🗑️ 「${itemToDelete.fileName}」を削除しました`);
+        dom.modalConfirmDelete.classList.add('hidden');
+        itemToDelete = null;
+        loadSavedRecords();
+      } catch (err) {
+        notifyToast('ファイルの削除に失敗しました。', true);
+      }
+    });
+
+    // ==============================================
+    // カード作成ツール（Google画像検索 & コピペ・D&D）
+    // ==============================================
+    let createdImageBlob = null;
+
+    dom.btnOpenCardCreator.addEventListener('click', () => {
+      dom.modalCreator.classList.remove('hidden');
+      dom.inputNewWordName.value = '';
+      createdImageBlob = null;
+      dom.previewCreatorImage.classList.add('hidden');
+      dom.dropPrompt.classList.remove('hidden');
+      dom.btnSaveNewCard.disabled = true;
+    });
+
+    dom.btnCloseCardCreator.addEventListener('click', () => {
+      dom.modalCreator.classList.add('hidden');
+    });
+
+    dom.btnOpenGoogleSearch.addEventListener('click', () => {
+      const word = dom.inputNewWordName.value.trim();
+      if (!word) {
+        notifyToast('先にことばの名前を入力してください。', true);
+        return;
+      }
+      window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(word)}`, '_blank');
+    });
+
+    window.addEventListener('paste', (e) => {
+      if (dom.modalCreator.classList.contains('hidden')) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const blob = item.getAsFile();
+          handleImportedImage(blob);
+          break;
+        }
+      }
+    });
+
+    dom.dropZoneCreator.addEventListener('dragover', (e) => { e.preventDefault(); });
+    dom.dropZoneCreator.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const file = e.dataTransfer?.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        handleImportedImage(file);
+      }
+    });
+
+    function handleImportedImage(blob) {
+      createdImageBlob = blob;
+      dom.previewCreatorImage.src = URL.createObjectURL(blob);
+      dom.previewCreatorImage.classList.remove('hidden');
+      dom.dropPrompt.classList.add('hidden');
+      checkCanSaveCard();
+    }
+
+    dom.inputNewWordName.addEventListener('input', checkCanSaveCard);
+
+    function checkCanSaveCard() {
+      const hasName = dom.inputNewWordName.value.trim().length > 0;
+      dom.btnSaveNewCard.disabled = !(hasName && createdImageBlob);
+    }
+
+    dom.btnSaveNewCard.addEventListener('click', async () => {
+      if (!state.cardsDirHandle) {
+        notifyToast('カード画像フォルダが未選択です。', true);
+        return;
+      }
+      const word = dom.inputNewWordName.value.trim().replace(/[\\/:*?"<>|]/g, '');
+      if (!word || !createdImageBlob) return;
+
+      try {
+        const fileName = `${word}.png`;
+        const handle = await state.cardsDirHandle.getFileHandle(fileName, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(createdImageBlob);
+        await writable.close();
+
+        notifyToast(`✨ 「${fileName}」をカードフォルダに追加しました！`);
+        dom.modalCreator.classList.add('hidden');
+
+        // 現在の出題を邪魔せず未出題デッキの末尾へ追加
+        const newCard = { name: fileName, word, fileHandle: handle };
+        state.cardFiles.push(newCard);
+        state.deckQueue.push(state.cardFiles.length - 1);
+
+      } catch (err) {
+        notifyToast('カード画像の書き込みに失敗しました。', true);
+      }
+    });
+
+    // ==============================================
+    // 成長レポート（カレンダー ＆ 目盛り付き折れ線グラフ）
+    // ==============================================
+    dom.btnOpenReport.addEventListener('click', () => {
+      dom.modalReport.classList.remove('hidden');
+      renderCalendar();
+      updateGraphDisplay();
+    });
+
+    dom.btnCloseReport.addEventListener('click', () => {
+      dom.modalReport.classList.add('hidden');
+    });
+
+    dom.tabReportCalendarBtn.addEventListener('click', () => {
+      dom.reportViewCalendar.classList.remove('hidden');
+      dom.reportViewGraph.classList.add('hidden');
+      dom.tabReportCalendarBtn.className = 'flex-1 py-1.5 rounded-lg bg-white shadow-xs text-emerald-800 font-bold whitespace-nowrap';
+      dom.tabReportGraphBtn.className = 'flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-bold whitespace-nowrap';
+    });
+
+    dom.tabReportGraphBtn.addEventListener('click', () => {
+      dom.reportViewCalendar.classList.add('hidden');
+      dom.reportViewGraph.classList.remove('hidden');
+      dom.tabReportGraphBtn.className = 'flex-1 py-1.5 rounded-lg bg-white shadow-xs text-emerald-800 font-bold whitespace-nowrap';
+      dom.tabReportCalendarBtn.className = 'flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-bold whitespace-nowrap';
+      updateGraphDisplay();
+    });
+
+    // カレンダー月送り
+    dom.btnCalPrev.addEventListener('click', () => {
+      state.calMonth--;
+      if (state.calMonth < 1) { state.calMonth = 12; state.calYear--; }
+      renderCalendar();
+    });
+    dom.btnCalNext.addEventListener('click', () => {
+      state.calMonth++;
+      if (state.calMonth > 12) { state.calMonth = 1; state.calYear++; }
+      renderCalendar();
+    });
+
+    function renderCalendar() {
+      dom.calMonthTitle.textContent = `${state.calYear}年 ${state.calMonth}月`;
+      dom.calendarGrid.innerHTML = '';
+      dom.calSelectedItemsList.innerHTML = '';
+      dom.calSelectedDateLabel.textContent = '日付をタップすると記録が表示されます';
+
+      const firstDay = new Date(state.calYear, state.calMonth - 1, 1).getDay();
+      const daysInMonth = new Date(state.calYear, state.calMonth, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'h-10 rounded-lg bg-slate-50/50';
+        dom.calendarGrid.appendChild(empty);
+      }
+
+      const takesByDay = new Map();
+      state.savedTakes.forEach(take => {
+        if (!take.timestamp) return;
+        const d = new Date(take.timestamp);
+        if (d.getFullYear() === state.calYear && d.getMonth() + 1 === state.calMonth) {
+          const day = d.getDate();
+          if (!takesByDay.has(day)) takesByDay.set(day, []);
+          takesByDay.get(day).push(take);
+        }
+      });
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        const dayTakes = takesByDay.get(day) || [];
+        const hasTakes = dayTakes.length > 0;
+
+        cell.className = `h-10 p-1 rounded-xl border flex flex-col items-center justify-between cursor-pointer transition select-none ${
+          hasTakes ? 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100' : 'bg-white border-slate-100 hover:bg-slate-50'
+        }`;
+
+        cell.innerHTML = `
+          <span class="text-[10px] font-bold ${hasTakes ? 'text-emerald-950 font-black' : 'text-slate-600'}">${day}</span>
+          ${hasTakes ? `<span class="text-[9px] font-black bg-emerald-500 text-white px-1 rounded-full">${dayTakes.length}</span>` : ''}
+        `;
+
+        cell.addEventListener('click', () => {
+          dom.calSelectedDateLabel.textContent = `📅 ${state.calYear}年${state.calMonth}月${day}日のきろく (${dayTakes.length}件)`;
+          dom.calSelectedItemsList.innerHTML = '';
+          if (dayTakes.length === 0) {
+            dom.calSelectedItemsList.innerHTML = '<div class="text-xs text-slate-400 py-2">この日の録音はありません</div>';
+            return;
+          }
+          dayTakes.forEach(t => {
+            const item = document.createElement('div');
+            item.className = 'bg-slate-50 p-2 rounded-xl flex items-center justify-between text-xs font-bold';
+            item.innerHTML = `
+              <span class="truncate mr-2">${t.word} ${t.note ? `<span class="text-amber-800">💬 "${t.note}"</span>` : ''}</span>
+              <button class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded-lg whitespace-nowrap">▶ 再生</button>
+            `;
+            item.querySelector('button').addEventListener('click', () => playTakeModal(t));
+            dom.calSelectedItemsList.appendChild(item);
+          });
+        });
+
+        dom.calendarGrid.appendChild(cell);
+      }
+    }
+
+    // グラフの月/年モード切り替え
+    dom.btnGraphModeMonth.addEventListener('click', () => {
+      state.graphMode = 'month';
+      dom.btnGraphModeMonth.className = 'px-3 py-1 font-black rounded-lg bg-emerald-600 text-white shadow-xs whitespace-nowrap';
+      dom.btnGraphModeYear.className = 'px-3 py-1 font-bold rounded-lg text-emerald-900 hover:bg-emerald-50 whitespace-nowrap';
+      updateGraphDisplay();
+    });
+
+    dom.btnGraphModeYear.addEventListener('click', () => {
+      state.graphMode = 'year';
+      dom.btnGraphModeYear.className = 'px-3 py-1 font-black rounded-lg bg-emerald-600 text-white shadow-xs whitespace-nowrap';
+      dom.btnGraphModeMonth.className = 'px-3 py-1 font-bold rounded-lg text-emerald-900 hover:bg-emerald-50 whitespace-nowrap';
+      updateGraphDisplay();
+    });
+
+    // グラフ期間ナビゲーション
+    dom.btnGraphPrev.addEventListener('click', () => {
+      if (state.graphMode === 'month') {
+        state.graphMonth--;
+        if (state.graphMonth < 1) { state.graphMonth = 12; state.graphYear--; }
+      } else {
+        state.graphYear--;
+      }
+      updateGraphDisplay();
+    });
+
+    dom.btnGraphNext.addEventListener('click', () => {
+      if (state.graphMode === 'month') {
+        state.graphMonth++;
+        if (state.graphMonth > 12) { state.graphMonth = 1; state.graphYear++; }
+      } else {
+        state.graphYear++;
+      }
+      updateGraphDisplay();
+    });
+
+    // 各単語が「初めて発語（記録）された日時」を特定するマップを作成
+    function getWordFirstSeenMap() {
+      const map = new Map();
+      const sorted = [...state.savedTakes].filter(t => t.timestamp > 0).sort((a,b) => a.timestamp - b.timestamp);
+      sorted.forEach(t => {
+        if (!map.has(t.word)) {
+          map.set(t.word, t.timestamp);
+        }
+      });
+      return map;
+    }
+
+    // グラフ描画とサマリーチップ更新
+    function updateGraphDisplay() {
+      const isMonth = state.graphMode === 'month';
+      dom.graphPeriodTitle.textContent = isMonth ? `${state.graphYear}年 ${state.graphMonth}月` : `${state.graphYear}年`;
+      dom.labelNewWordsPeriod.textContent = isMonth ? `${state.graphMonth}月に新しく覚えたことば` : `${state.graphYear}年に新しく覚えたことば`;
+
+      const wordFirstSeen = getWordFirstSeenMap();
+      const totalWordsAllTime = wordFirstSeen.size;
+      dom.graphStatBadge.textContent = `通算獲得: ${totalWordsAllTime}語`;
+
+      // 選択期間内の新規獲得語を抽出
+      const newWordsInPeriod = [];
+      wordFirstSeen.forEach((ts, word) => {
+        const d = new Date(ts);
+        if (isMonth) {
+          if (d.getFullYear() === state.graphYear && d.getMonth() + 1 === state.graphMonth) {
+            newWordsInPeriod.push({ word, timestamp: ts });
+          }
+        } else {
+          if (d.getFullYear() === state.graphYear) {
+            newWordsInPeriod.push({ word, timestamp: ts });
+          }
+        }
+      });
+
+      newWordsInPeriod.sort((a,b) => a.timestamp - b.timestamp);
+
+      // 新語チップ一覧を更新
+      dom.badgeNewWordsCount.textContent = `+${newWordsInPeriod.length} 語`;
+      dom.listNewWordsChips.innerHTML = '';
+      if (newWordsInPeriod.length === 0) {
+        dom.listNewWordsChips.innerHTML = '<span class="text-xs text-slate-400 font-bold py-1">この期間に新しく記録された言葉はありません</span>';
+      } else {
+        newWordsInPeriod.forEach(item => {
+          const chip = document.createElement('span');
+          chip.className = 'px-2.5 py-1 bg-white text-emerald-950 font-black text-xs rounded-xl border border-emerald-300 shadow-2xs flex items-center gap-1';
+          chip.innerHTML = `<span>🌱</span><span>${item.word}</span>`;
+          dom.listNewWordsChips.appendChild(chip);
+        });
+      }
+
+      // SVG折れ線グラフ（縦軸・横軸目盛り付き）を描画
+      renderSvgChart(isMonth, wordFirstSeen);
+    }
+
+    // SVG折れ線グラフ描画エンジン
+    function renderSvgChart(isMonth, wordFirstSeen) {
+      const svg = dom.svgGrowthGraph;
+      svg.innerHTML = '';
+
+      const containerW = dom.graphSvgContainer.clientWidth || 450;
+      const containerH = dom.graphSvgContainer.clientHeight || 220;
+
+      const padL = 40; // 縦軸目盛り領域
+      const padR = 25;
+      const padT = 20;
+      const padB = 30; // 横軸目盛り領域
+
+      const plotW = containerW - padL - padR;
+      const plotH = containerH - padT - padB;
+
+      // X軸のポイント（日または月）ごとの累積語数を集計
+      const points = [];
+      let maxSteps = isMonth ? new Date(state.graphYear, state.graphMonth, 0).getDate() : 12;
+
+      for (let step = 1; step <= maxSteps; step++) {
+        let deadlineTs;
+        if (isMonth) {
+          deadlineTs = new Date(state.graphYear, state.graphMonth - 1, step, 23, 59, 59).getTime();
+        } else {
+          deadlineTs = new Date(state.graphYear, step, 0, 23, 59, 59).getTime();
+        }
+
+        let cumCount = 0;
+        wordFirstSeen.forEach((ts) => {
+          if (ts <= deadlineTs) cumCount++;
+        });
+
+        points.push({ step, count: cumCount });
+      }
+
+      // Y軸の最大値（見栄えのため余裕を付与）
+      const maxValRaw = Math.max(...points.map(p => p.count), 1);
+      const yMax = Math.ceil(maxValRaw <= 5 ? 5 : maxValRaw * 1.15);
+
+      // 1. Y軸水平グリッド線 ＆ 目盛りラベル
+      const yTicks = 4;
+      for (let i = 0; i <= yTicks; i++) {
+        const val = Math.round((yMax / yTicks) * i);
+        const yPos = padT + plotH - (val / yMax) * plotH;
+
+        // グリッド線
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padL);
+        line.setAttribute('y1', yPos);
+        line.setAttribute('x2', padL + plotW);
+        line.setAttribute('y2', yPos);
+        line.setAttribute('stroke', i === 0 ? '#94A3B8' : '#E2E8F0');
+        line.setAttribute('stroke-width', i === 0 ? '1.5' : '1');
+        line.setAttribute('stroke-dasharray', i === 0 ? 'none' : '3,3');
+        svg.appendChild(line);
+
+        // ラベル
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', padL - 8);
+        text.setAttribute('y', yPos + 3.5);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '10');
+        text.setAttribute('font-family', 'sans-serif');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#64748B');
+        text.textContent = val;
+        svg.appendChild(text);
+      }
+
+      // 2. X軸目盛りラベル ＆ 縦ガイド
+      points.forEach(p => {
+        let shouldShowLabel = false;
+        if (isMonth) {
+          shouldShowLabel = (p.step === 1 || p.step % 5 === 0 || p.step === maxSteps);
+        } else {
+          shouldShowLabel = (p.step % 2 !== 0 || p.step === 12);
+        }
+
+        const xPos = padL + ((p.step - 1) / (maxSteps - 1)) * plotW;
+
+        if (shouldShowLabel) {
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', xPos);
+          text.setAttribute('y', containerH - 10);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-size', '10');
+          text.setAttribute('font-family', 'sans-serif');
+          text.setAttribute('font-weight', 'bold');
+          text.setAttribute('fill', '#64748B');
+          text.textContent = isMonth ? `${p.step}日` : `${p.step}月`;
+          svg.appendChild(text);
+        }
+      });
+
+      // 3. 折れ線パスの描画
+      const dArr = points.map((p, idx) => {
+        const x = padL + ((p.step - 1) / (maxSteps - 1)) * plotW;
+        const y = padT + plotH - (p.count / yMax) * plotH;
+        return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+      });
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', dArr.join(' '));
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#059669');
+      path.setAttribute('stroke-width', '3');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(path);
+
+      // 4. データポイントドット ＆ 末尾ハイライト
+      points.forEach(p => {
+        const x = padL + ((p.step - 1) / (maxSteps - 1)) * plotW;
+        const y = padT + plotH - (p.count / yMax) * plotH;
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', '3');
+        circle.setAttribute('fill', '#10B981');
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '1.5');
+        svg.appendChild(circle);
+      });
+
+      // 最新点（右端）の強調バッジ
+      const last = points[points.length - 1];
+      const lx = padL + plotW;
+      const ly = padT + plotH - (last.count / yMax) * plotH;
+
+      const bigDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      bigDot.setAttribute('cx', lx);
+      bigDot.setAttribute('cy', ly);
+      bigDot.setAttribute('r', '5');
+      bigDot.setAttribute('fill', '#047857');
+      svg.appendChild(bigDot);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', lx - 6);
+      label.setAttribute('y', Math.max(padT + 12, ly - 8));
+      label.setAttribute('text-anchor', 'end');
+      label.setAttribute('font-size', '11');
+      label.setAttribute('font-family', 'sans-serif');
+      label.setAttribute('font-weight', '900');
+      label.setAttribute('fill', '#065F46');
+      label.textContent = `${last.count}語`;
+      svg.appendChild(label);
+    }
+
+    // ページロード時初期化
+    window.addEventListener('DOMContentLoaded', () => {
+      checkSavedDirectoriesOnLoad();
+    });
+  </script>
+</body>
+</html>
