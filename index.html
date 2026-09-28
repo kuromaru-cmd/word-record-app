@@ -19,7 +19,7 @@
     @keyframes popBounce {
       0% { transform: scale(0.92); opacity: 0.7; }
       60% { transform: scale(1.03); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1); }
     }
     .animate-pop-card {
       animation: popBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -48,7 +48,7 @@
 </head>
 <body class="bg-amber-50/50 text-slate-800 min-h-screen flex flex-col select-none">
 
-  <!-- ヘッダー（タイトル＆モード切り替えタブ） -->
+  <!-- ヘッダー（タイトル＆モード切り替えタブ ＆ アクション） -->
   <header class="bg-white/95 backdrop-blur-md border-b border-amber-200 sticky top-0 z-30 shadow-xs">
     <div class="max-w-6xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
       
@@ -83,6 +83,11 @@
         <!-- カード作成ボタン -->
         <button id="btn-open-card-creator" class="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-sky-600 hover:from-indigo-600 hover:to-sky-700 text-white text-xs font-black rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
           ✨ カードをつくる
+        </button>
+
+        <!-- つかいかたガイドボタン -->
+        <button id="btn-open-guide" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-black rounded-xl border border-amber-300 shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap">
+          ❓ つかいかた
         </button>
       </div>
 
@@ -286,8 +291,77 @@
   </main>
 
   <!-- ============================================== -->
-  <!-- 3. モーダル類（カード作成・尺調整・レポート） -->
+  <!-- 3. モーダル類（ガイド・カード作成・尺調整・レポート） -->
   <!-- ============================================== -->
+
+  <!-- ガイドモーダル（❓ つかいかた・はじめてガイド） -->
+  <div id="modal-guide" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border-2 border-amber-300 flex flex-col max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-black text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <span>🎈</span> 発語きろくアルバムのつかいかた
+        </h3>
+        <button id="btn-close-guide" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <!-- ガイド本文（3ステップ ＆ 便利機能案内） -->
+      <div class="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        
+        <!-- ステップ1 -->
+        <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200">
+          <div class="font-black text-amber-950 text-sm mb-1 flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center">1</span>
+            フォルダを2つえらぼう
+          </div>
+          <p class="text-xs text-slate-600">
+            ・<strong class="text-amber-900">カード画像フォルダ</strong>：「パトカー.jpg」「りんご.png」などが入ったフォルダを指定します。<br>
+            ・<strong class="text-sky-900">動画の保存先</strong>：お子様の録音動画（WebM形式）を書き出すフォルダを指定します。<br>
+            <span class="text-[11px] text-amber-800/80 font-bold">※一度選ぶとブラウザが記憶し、次回からは「🔁 前回のフォルダを再開」で1タップ再開できます！</span>
+          </p>
+        </div>
+
+        <!-- ステップ2 -->
+        <div class="bg-orange-50/70 p-3.5 rounded-2xl border border-orange-200">
+          <div class="font-black text-orange-950 text-sm mb-1 flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center">2</span>
+            カードを見せて楽しくおしゃべり！
+          </div>
+          <p class="text-xs text-slate-600">
+            ・大きなカードが出題され、マイクが自動で音声を待ち受けます。<br>
+            ・お子様がおしゃべりしたら、手元の <kbd class="bg-white px-1.5 py-0.5 rounded border border-slate-300 font-mono text-xs font-bold text-slate-800">[スペースキー]</kbd> を押すだけで自動保存され、次のカードへ進みます。<br>
+            ・手元で一時停止したいときは <kbd class="bg-white px-1.5 py-0.5 rounded border border-slate-300 font-mono text-xs font-bold text-slate-800">[Enterキー]</kbd> で録音ストップ・再開ができます。
+          </p>
+        </div>
+
+        <!-- ステップ3 -->
+        <div class="bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200">
+          <div class="font-black text-emerald-950 text-sm mb-1 flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center">3</span>
+            これまでのきろく ＆ 成長レポートで振り返る
+          </div>
+          <p class="text-xs text-slate-600">
+            ・<strong class="text-slate-800">これまでのきろく</strong>：五十音順や検索から、過去のテイクを再生・トリミング（無音カット）・削除できます。<br>
+            ・<strong class="text-emerald-800">📊 成長レポート</strong>：日別カレンダーや、月・年ごとの語数推移グラフ、新しく覚えた言葉一覧を確認できます。
+          </p>
+        </div>
+
+        <!-- 安心・プライバシーについて -->
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-slate-500 text-[11px]">
+          <strong class="text-slate-700 block mb-0.5">🔒 プライバシー・セキュリティについて</strong>
+          このアプリは外部サーバーと一切通信しません。カード画像やお子様の音声ファイルは、すべて<strong>ご自身のパソコン内（または指定したGoogleドライブフォルダ）にのみ保存</strong>されますのでご安心ください。
+        </div>
+
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-100 flex justify-end">
+        <button id="btn-close-guide-footer" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs rounded-xl shadow-xs transition active:scale-95 whitespace-nowrap">
+          わかった！
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- A. カード作成モーダル（Google画像検索 & コピペ・D&D連携） -->
   <div id="modal-card-creator" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -605,6 +679,12 @@
       inputSearch: document.getElementById('input-gallery-search'),
       btnRefreshGallery: document.getElementById('btn-refresh-gallery'),
       galleryContainer: document.getElementById('gallery-container'),
+
+      // ガイドモーダル
+      modalGuide: document.getElementById('modal-guide'),
+      btnOpenGuide: document.getElementById('btn-open-guide'),
+      btnCloseGuide: document.getElementById('btn-close-guide'),
+      btnCloseGuideFooter: document.getElementById('btn-close-guide-footer'),
 
       // カード作成モーダル
       modalCreator: document.getElementById('modal-card-creator'),
@@ -1136,13 +1216,11 @@
 
         // 背景ノイズ基準値
         const avgRms = count > 0 ? (backgroundSum / count) : 0;
-        // 声と判定する閾値（定常ノイズより有意に大きく、単なるマイク静電ノイズを超える水準）
+        // 声と判定する閾値
         const voiceRmsThreshold = Math.max(0.015, avgRms * 2.2);
         const voicePeakThreshold = 0.035;
 
-        // 「声の持続性」を判定：
-        // クリック音は1〜2窓（20〜40ms程度）で急速に減衰しますが、
-        // 2歳児の発声（母音・子音）は短くても連続3窓以上（約120ms以上）持続します
+        // 声の持続性判定
         let consecutiveVoiceWindows = 0;
         let maxConsecutive = 0;
         let totalVoiceWindows = 0;
@@ -1160,7 +1238,7 @@
           }
         }
 
-        // 連続して約120ms以上（3窓以上）かつ合計で約160ms以上（4窓以上）の持続があるか
+        // 連続して約120ms以上かつ合計約160ms以上の持続があるか
         const isVoiceDetected = maxConsecutive >= 3 && totalVoiceWindows >= 4;
         return !isVoiceDetected;
       } catch (e) {
@@ -1230,9 +1308,21 @@
 
     dom.btnNextCard.addEventListener('click', saveCurrentTakeAndAdvance);
 
+    // ガイドモーダルの開閉
+    dom.btnOpenGuide.addEventListener('click', () => {
+      dom.modalGuide.classList.remove('hidden');
+    });
+    dom.btnCloseGuide.addEventListener('click', () => {
+      dom.modalGuide.classList.add('hidden');
+    });
+    dom.btnCloseGuideFooter.addEventListener('click', () => {
+      dom.modalGuide.classList.add('hidden');
+    });
+
     // キーボードショートカット（Space: 保存して次へ / Enter: 録音ストップ・再開）
     window.addEventListener('keydown', (e) => {
-      if (!dom.modalCreator.classList.contains('hidden') ||
+      if (!dom.modalGuide.classList.contains('hidden') ||
+          !dom.modalCreator.classList.contains('hidden') ||
           !dom.modalTrimmer.classList.contains('hidden') ||
           !dom.modalReport.classList.contains('hidden') ||
           !dom.modalConfirmDelete.classList.contains('hidden')) {
@@ -1628,7 +1718,7 @@
         if (abs > peak) peak = abs;
       }
 
-      // 声の閾値（ピークの24%以上、または絶対値0.045以上）
+      // 声の閾値
       const voiceThreshold = Math.max(0.045, peak * 0.24);
       const windowSize = Math.floor(sampleRate * 0.04); // 40ms窓
       const totalWindows = Math.floor(effectiveLength / windowSize);
@@ -1653,7 +1743,7 @@
         }
       }
 
-      // 2. 単発のクリック音（1〜2窓＝80ms未満）を除外し、3窓（120ms以上）続く声のブロックを特定
+      // 2. 単発のクリック音（80ms未満）を除外し、3窓（120ms以上）続く声のブロックを特定
       let firstVoiceWin = -1;
       let lastVoiceWin = -1;
 
@@ -1664,7 +1754,7 @@
         }
       }
 
-      // 3. 声が検出された場合はスライダーを吸着（前後に適度な余白0.08秒を付与）
+      // 3. 声が検出された場合はスライダーを吸着
       if (firstVoiceWin !== -1 && lastVoiceWin !== -1) {
         const detectedStart = Math.max(0, (firstVoiceWin * windowSize) / sampleRate - 0.08);
         const detectedEnd = Math.min(dur, ((lastVoiceWin + 1) * windowSize) / sampleRate + 0.1);
@@ -1793,9 +1883,7 @@
       }
     });
 
-    // ==============================================
     // 削除確認モーダル
-    // ==============================================
     let itemToDelete = null;
 
     function promptDeleteTake(take) {
@@ -2147,7 +2235,7 @@
         points.push({ step, count: cumCount });
       }
 
-      // Y軸の最大値（見栄えのため余裕を付与）
+      // Y軸の最大値
       const maxValRaw = Math.max(...points.map(p => p.count), 1);
       const yMax = Math.ceil(maxValRaw <= 5 ? 5 : maxValRaw * 1.15);
 
@@ -2222,7 +2310,7 @@
       path.setAttribute('stroke-linejoin', 'round');
       svg.appendChild(path);
 
-      // 4. データポイントドット ＆ 末尾ハイライト
+      // 4. データポイントドット
       points.forEach(p => {
         const x = padL + ((p.step - 1) / (maxSteps - 1)) * plotW;
         const y = padT + plotH - (p.count / yMax) * plotH;
