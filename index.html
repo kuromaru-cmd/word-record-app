@@ -58,7 +58,6 @@
         <div>
           <h1 class="text-lg sm:text-xl font-black text-amber-950 tracking-tight leading-none flex items-center gap-2">
             発語きろくアルバム
-            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">2さい向け</span>
           </h1>
           <p class="text-[11px] text-amber-800/70 font-bold mt-0.5 whitespace-nowrap">ことばのおもいでをあつめよう</p>
         </div>
@@ -153,11 +152,11 @@
         </div>
 
         <!-- カード出題エリア（フォルダ選択後に表示） -->
-        <div id="card-stage" class="hidden flex-1 flex flex-col p-4 sm:p-6 justify-between">
+        <div id="card-stage" class="hidden flex-1 min-h-0 flex flex-col p-3 sm:p-5 justify-between">
           
-          <!-- カード画像（大画面・見やすい迫力サイズ） -->
-          <div class="flex-1 min-h-[280px] max-h-[56vh] flex items-center justify-center bg-amber-50/40 rounded-2xl p-2 relative overflow-hidden border border-amber-100">
-            <img id="card-image" src="" alt="お題の画像" class="max-w-full max-h-full object-contain rounded-xl drop-shadow-md transition-transform duration-200">
+          <!-- カード画像エリア（枠内に全体が綺麗に収まるよう自動調整） -->
+          <div class="flex-1 min-h-[200px] max-h-[48vh] w-full flex items-center justify-center bg-amber-50/40 rounded-2xl p-3 sm:p-4 relative border border-amber-100 overflow-hidden">
+            <img id="card-image" src="" alt="お題の画像" class="max-w-full max-h-full w-auto h-auto object-contain rounded-xl drop-shadow-md transition-transform duration-200">
           </div>
 
           <!-- 単語名＆発音メモ欄 -->
