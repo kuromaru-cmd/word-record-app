@@ -753,6 +753,11 @@
       btnCancelDelete: document.getElementById('btn-cancel-delete'),
       btnExecuteDelete: document.getElementById('btn-execute-delete'),
 
+      // スマホ案内モーダル
+      modalMobileUnsupported: document.getElementById('modal-mobile-unsupported'),
+      btnCopyAppUrl: document.getElementById('btn-copy-app-url'),
+      btnDismissMobileNotice: document.getElementById('btn-dismiss-mobile-notice'),
+
       // 共通オーバーレイ・通知
       savingOverlay: document.getElementById('saving-overlay'),
       savingMessage: document.getElementById('saving-message'),
@@ -2369,8 +2374,54 @@
       svg.appendChild(label);
     }
 
+    // ==============================================
+    // スマホ・非対応ブラウザ判定
+    // ==============================================
+    function checkDeviceSupport() {
+      // 1. UserAgent および タッチポイントによるスマホ・タブレット判定
+      const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isIPadOS = navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent);
+      const isMobile = isMobileUA || isIPadOS;
+
+      // 2. フォルダ保存（File System Access API）のサポート判定
+      const hasDirectoryPicker = typeof window.showDirectoryPicker === 'function';
+
+      // スマホ・タブレット、またはフォルダ選択非対応環境の場合は案内モーダルを表示
+      if (isMobile || !hasDirectoryPicker) {
+        if (dom.modalMobileUnsupported) {
+          dom.modalMobileUnsupported.classList.remove('hidden');
+        }
+      }
+    }
+
+    // URLコピー操作
+    if (dom.btnCopyAppUrl) {
+      dom.btnCopyAppUrl.addEventListener('click', () => {
+        const url = window.location.href;
+        const tempInput = document.createElement('input');
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        try {
+          document.execCommand('copy');
+          notifyToast('📋 ページのURLをコピーしました！');
+        } catch (e) {
+          notifyToast('URLのコピーに失敗しました', true);
+        }
+        document.body.removeChild(tempInput);
+      });
+    }
+
+    // モーダルを閉じる（画面の確認を許可）
+    if (dom.btnDismissMobileNotice) {
+      dom.btnDismissMobileNotice.addEventListener('click', () => {
+        dom.modalMobileUnsupported.classList.add('hidden');
+      });
+    }
+
     // ページロード時初期化
     window.addEventListener('DOMContentLoaded', () => {
+      checkDeviceSupport();
       checkSavedDirectoriesOnLoad();
     });
   </script>
